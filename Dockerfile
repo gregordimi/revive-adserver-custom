@@ -1,6 +1,5 @@
 FROM php:8.2-apache
 
-# Install dependencies and required PHP extensions
 RUN apt-get update && apt-get install -y --no-install-recommends \
     ca-certificates \
     libpng-dev \
@@ -8,7 +7,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     libfreetype6-dev \
     libzip-dev \
     tar \
-    curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
     mysqli \
@@ -18,18 +16,14 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     opcache \
     && rm -rf /var/lib/apt/lists/*
 
-# Enable Apache rewrite module
 RUN a2enmod rewrite
 
-# Download and extract Revive Adserver (stable release)
-ARG REVIVE_VERSION=6.0.8
-
+# Copy and extract the local archive directly
+COPY revive-adserver-6.0.8.tar.gz /tmp/revive.tar.gz
 RUN mkdir -p /var/www/html \
-    && curl -fsSL "https://download.revive-adserver.com/revive-adserver-${REVIVE_VERSION}.tar.gz" -o /tmp/revive.tar.gz \
     && tar -xzf /tmp/revive.tar.gz --strip-components=1 -C /var/www/html \
     && rm -f /tmp/revive.tar.gz
 
-# Set appropriate permissions for Apache
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html \
     && chmod -R 775 /var/www/html/var \
