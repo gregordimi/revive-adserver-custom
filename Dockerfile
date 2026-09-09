@@ -22,8 +22,11 @@ RUN a2enmod rewrite
 
 # Download and extract Revive Adserver (stable release)
 ARG REVIVE_VERSION=6.0.8
-RUN curl -sSL https://download.revive-adserver.com/revive-adserver-${REVIVE_VERSION}.tar.gz \
-    | tar -xz --strip-components=1 -C /var/www/html/
+
+RUN mkdir -p /var/www/html \
+    && curl -fsSL "https://download.revive-adserver.com/revive-adserver-${REVIVE_VERSION}.tar.gz" -o /tmp/revive.tar.gz \
+    && tar -xzf /tmp/revive.tar.gz --strip-components=1 -C /var/www/html \
+    && rm -f /tmp/revive.tar.gz
 
 # Set appropriate permissions for Apache
 RUN chown -R www-data:www-data /var/www/html \
