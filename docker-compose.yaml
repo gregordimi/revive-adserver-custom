@@ -10,11 +10,13 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  revive-app:
+revive-app:
     build:
       context: .
       dockerfile: Dockerfile
     restart: unless-stopped
+    expose:
+      - 80
     depends_on:
       - revive-db
     volumes:
