@@ -1,0 +1,29 @@
+services:
+  revive-db:
+    image: mariadb:10.11
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password_change_me}
+      MYSQL_DATABASE: revive_adserver
+      MYSQL_USER: revive_user
+      MYSQL_PASSWORD: ${DB_PASSWORD:-user_password_change_me}
+    volumes:
+      - db_data:/var/lib/mysql
+
+  revive-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    depends_on:
+      - revive-db
+    volumes:
+      - revive_var:/var/www/html/var
+      - revive_plugins:/var/www/html/plugins
+      - revive_images:/var/www/html/www/images
+
+volumes:
+  db_data:
+  revive_var:
+  revive_plugins:
+  revive_images:
